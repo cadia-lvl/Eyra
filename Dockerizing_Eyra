@@ -1,0 +1,34 @@
+Summary and adaption of first half of tutorial given by Róbert Kjaran
+
+VMs are  resource intensive
+	most resources on a VM are unused
+
+An alternative option is Docker.
+
+Docker will contain and  make Eyra safer to use
+	but it will need to be given a little but of computing time, cpu cycles, percentage of cpu it is allowed to use and memory 2096 MB
+	each container will have a separate user land tool, for example one can have alpine linux as the Eyra specific user land tools
+	alpine linux has the bare minimum of tools needed, then you install the rest. 
+	But it can just be based on debian or ubuntu, which would be preferrable for Eyra because it has been tested on those systems
+	docker creates images of all the libraries and binaries necessary to fire up an instance
+	containers which are too large will be a bad use of docker, due to unused libraries, which is similar to VM usage
+	It is possible to create a partial image but there are offical global repositories that you can use instead of defining your own.
+	Róbert says containers are theoretically secure and sandboxed from the rest of the system.
+	docker images are called a name then they have a version number, etc which for some reason Docker calls tags, but the default one if called with no tags, then the "latest" tag is used.
+
+However, if you have a Windows machine, then you need to run Docker within a VM, but Docker will create that VM for you.
+
+
+Instructions on how to Dockerize Eyra, first steps
+On a linux machine,
+0. Create Dockerfile within the main Eyra folder. That is the build context. It's what Docker can see. It'll contain your image. 
+1. Create a docker image which is based on either Debian or Ubuntu, with specific versions.
+	Images can only be based on one other image.
+		Install packages via package managers.
+2. Then create a Docker container folder which contains the real files in your virtual container. Add Eyra to it completely.
+3. There is a separate process to forward a port to a a container
+4. Specify a volume.
+5. Make the mysql setup script less interactive
+6. Create a hashed password file as an initialization script. The password is set as an environment variable. The things which can't be codified is passed as environment variables. This is for the apache diagnostics page.
+
+7. Include the install_tokens.sh script as a Docker entry point script if you want to use malromur tokens. Otherwise, include intall_tokens.sh but have it reference a different file. Could potentially name it something more generic so the user can use install_tokens.sh by default.
