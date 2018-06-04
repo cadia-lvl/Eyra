@@ -273,10 +273,10 @@ body {
 /* img stylings */
 .main-img {
   margin: 0 auto;
-  padding: 5%;
-  max-height: 30em;
-  max-width: 26em;
-  width: 70%;
+  padding: 2% 0.5%;
+  flex-basis: 70%;
+  max-height: $stdViewHeight;
+  max-width: $stdViewWidth;
 }
 
 /* navbar */
