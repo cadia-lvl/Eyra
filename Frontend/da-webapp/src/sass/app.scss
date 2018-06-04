@@ -144,6 +144,9 @@ body {
     button {
       margin-top: 1em;
     }
+    .btn-speaker-info{
+      margin-top: 8em;
+    }    
   }
 }
 #grades {
@@ -187,6 +190,18 @@ body {
   max-height: 200px;
 }
 
+.speaker-info-choice{
+  margin-top: 1em;
+}
+
+.speaker-info-control{
+  font-weight: bold;
+  text-align: center;
+}
+
+.speaker-info-form{
+  margin-top: 3em;
+}
 /* button/glyph stylings */
 .btn-list {
   margin: 1%;
@@ -258,10 +273,10 @@ body {
 /* img stylings */
 .main-img {
   margin: 0 auto;
-  padding: 2% 0.5%;
-  flex-basis: 70%;
-  max-height: $stdViewHeight;
-  max-width: $stdViewWidth;
+  padding: 5%;
+  max-height: 30em;
+  max-width: 26em;
+  width: 70%;
 }
 
 /* navbar */
