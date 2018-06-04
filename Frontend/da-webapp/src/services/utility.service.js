@@ -118,7 +118,7 @@ function utilityService(logger) {
     'ACCEPTTEXT' : 'Samþykkja',   //'Accept', 
     'DECLINETEXT' : 'Hafna',  //'Decline',
     //speaker info
-    'INFOHEADINGTEXT' : 'Vinsamlegast veldu þá möguleika sem eiga við þig',  //'Enter your info',
+    'INFOHEADINGTEXT' : 'Vinsamlegast veldu það sem á við þig.',  //'Enter your info',
     //start
     'STARTHEADINGTEXT' : 'Vinsamlegast fylltu inn þá möguleika sem eiga við þig',  //'Enter your info',
     'USERNAMETEXT' : 'Notendanafn',  //'Username',
