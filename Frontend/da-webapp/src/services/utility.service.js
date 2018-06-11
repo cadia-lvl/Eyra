@@ -65,7 +65,7 @@ function utilityService(logger) {
     'syncRecCountPerSend' : 5, // recs to send each transmission to server during a Sync operation,
     'evalBufferSize' : 5, // number of prompts and/or recs to fetch and keep in memory during evaluation
     'evalSubmitFreq' : 5, // per utterance graded, after X send to server
-    'RECAGREEMENT' : true, // include the recording participant agreement
+    'RECAGREEMENT' : false, // include the recording participant agreement
     //language specific constants
     //evaluation login
     'ENTERINFO' : 'Fylltu inn þínar upplýsingar', //'Enter your info',
@@ -124,9 +124,9 @@ function utilityService(logger) {
     'USERNAMETEXT' : 'Notendanafn',  //'Username',
     'DONEBEFORETEXT' : 'Ég hef notað Eyra áður',  //'Done this before?', 
     //recording
-     'RECTEXT' : 'Taka upp', //'Rec', //text under rec button
-     'STOPTEXT' : 'Stopp',  //'Stop',
-     'SKIPTEXT' : 'Sleppa',  //'Skip',
+     'RECTEXT' : 'Byrja upptöku', //'Rec', //text under rec button
+     'STOPTEXT' : 'Stoppa upptöku',  //'Stop',
+     'SKIPTEXT' : 'Fá annan texta',  //'Skip',
      'PROMPTSREADTEXT' : 'Lesnir textar:',  //'Prompts read',
      'UTTQUALITYTEXT' : 'Gæði lesinna frasa',  //'Quality of utts',
      'UTTUPLOADEDTEXT' : 'Frösum hlaðið upp',  //'Utterances uploaded',

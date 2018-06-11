@@ -19,36 +19,41 @@ File author/s:
 
 <div class="content vertical-center">
     <div class="recording-view">
-        <p class="token">{{recCtrl.displayToken}}</p>
-        <div id="playback" ng-hide="hide_playback">
-            <audio ng-src="{{recCtrl.curRec[0].url | trustUrl}}" controls></audio>
+        <div class="skip-btn-wrapper">
+            <button class="btn btn-skip-ctrl {{noHover}}" type="button" ng-disabled="recCtrl.skipBtnDisabled" ng-click="recCtrl.skip()">
+                <p>{{skipText}}</p>
+            </button>
+        </div>
+        <div class="token-wrapper {{recordingWrapperBorder}}">
+            <p class="token">{{recCtrl.displayToken}}</p>
         </div>
         <!-- action = rec or stop -->
-        <div class="record-ctrl-wrapper">
-            <button class="btn btn-glyph-only btn-record-ctrl" type="button" ng-disabled="recCtrl.actionBtnDisabled" ng-click="recCtrl.action()">
-                <span class="glyphicon {{actionGlyph}}"></span>
-            </button>
-            <p>{{actionText}}</p>
+        <div class="record-btn-wrapper">
+                <button class="btn-rec-action-ctrl {{recAction}}" type="button" ng-disabled="recCtrl.actionBtnDisabled" ng-click="recCtrl.action()">
+                    <p>{{actionText}}</p>
+                </button>
         </div>
-        <div class="record-ctrl-wrapper">
-            <button class="btn btn-glyph-only btn-record-ctrl" type="button" ng-disabled="recCtrl.skipBtnDisabled" ng-click="recCtrl.skip()">
-                <span class="glyphicon glyphicon-ban-circle"></span>
-            </button>
-            <p>{{skipText}}</p>
+        <div class="mic-icon-wrapper">
+            <img class="" src="img/mic.png" alt="A mic." ng-if="recCtrl.showMic">
         </div>
-        <div class="feedbackDisplay">
-            <p>{{promptsReadText}} {{tokensRead}}</p>
-            <progress max="{{tokenCountGoal}}" value="{{tokensRead}}"></progress>
+        <div class="recording-wrapper">
+            <div class="feedbackDisplay">
+                <canvas id="volume-meter" width="200" height="50"></canvas>
+    
+              
+                <!-- <meter id="accMeter" min="0.0" max="1.0" value="{{recCtrl.accuracy}}" low="{{recCtrl.lowThreshold}}" high="{{recCtrl.highThreshold}}" optimum="1.0" title="accuracy"></meter> -->
+                <!-- <p>{{promptsReadText}} {{tokensRead}}</p> -->
+            </div>
+        </div>
 
-            <canvas id="volume-meter" width="200" height="50"></canvas>
-
-            <meter id="accMeter" min="0.0" max="1.0" value="{{recCtrl.accuracy}}" low="{{recCtrl.lowThreshold}}" high="{{recCtrl.highThreshold}}" optimum="1.0" title="accuracy"></meter>
-            <label for="accMeter">{{utterancetQuality}}: {{recCtrl.lowerUtt}} - {{recCtrl.upperUtt}}</label>
+        <div id="playback" ng-hide="hide_playback">
+                <audio ng-src="{{recCtrl.curRec[0].url | trustUrl}}" controls></audio>
         </div>
+        <p>{{promptsReadText}} {{tokensRead}}</p>
         <p class="message">{{msg}}</p>
     </div>
 </div>
-    
+<!--
 <div class="content">
     <footer class="footer">
       <div class="container minorFeedbackDisplay text-center">
@@ -56,3 +61,4 @@ File author/s:
       </div>
     </footer>
 </div>
+-->

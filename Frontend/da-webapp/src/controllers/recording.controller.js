@@ -72,12 +72,16 @@ function RecordingController($q,
   var util = utilityService;
   var volService = volumeMeterService;
 
+  $scope.recordingWrapperBorder = 'not-recording-border';
+  recCtrl.showMic = false;
   recCtrl.action = action;
   recCtrl.skip = skip;
   $scope.skipText = util.getConstant('SKIPTEXT');
   $scope.promptsReadText = util.getConstant('PROMPTSREADTEXT');
   $scope.utteranceQuality = util.getConstant('UTTQUALITYTEXT');
   $scope.utteranceUploaded = util.getConstant('UTTUPLOADEDTEXT');
+
+  $scope.recAction = 'btn-stop-action';
 
   $scope.msg = ''; // single debug/information msg
   recCtrl.curRec = recService.currentRecording;
@@ -123,7 +127,7 @@ function RecordingController($q,
     recService.setupCallbacks(recordingCompleteCallback);
     var res = volService.init(recService.getAudioContext(), recService.getStreamSource());
     if (!res) logger.log('Volume meter failed to initialize.');
-    qcService.setupCallbacks(qcDataReady);
+    //qcService.setupCallbacks(qcDataReady);
 
     // get recsDelivered, first check RAM, then ldb
     $scope.recsDelivered = dataService.get('recsDelivered') || 0;
@@ -205,25 +209,36 @@ function RecordingController($q,
   }
 
   // callback, called by qc service
+  /*
   function qcDataReady(data) {
     recCtrl.accuracy = data.avgAcc;
     recCtrl.lowerUtt = data.lowerUtt;
     recCtrl.upperUtt = data.upperUtt;
   }
+  */
 
   function toggleActionBtn() {
     if (actionType === 'record') {
+      recCtrl.showMic = true;
+      $scope.noHover = 'nohover';
+      $scope.recAction = 'btn-record-action';
+      $scope.recordingWrapperBorder = 'recording-border';
       actionType = 'stop';
       $scope.actionText = util.getConstant('STOPTEXT');
       $scope.actionGlyph = STOPGLYPH;
       $scope.hide_playback = true;
     } else if (actionType === 'stop') {
+      recCtrl.showMic = false;
+      $scope.noHover = '';
+      $scope.recAction = 'btn-stop-action';
+      $scope.recordingWrapperBorder = 'not-recording-border';
       actionType = 'record';
       $scope.hide_playback = false;
       $scope.actionText = util.getConstant('RECTEXT');
       $scope.actionGlyph = RECGLYPH;
     }
   }
+
 
   function record() {
     $scope.msg = util.getConstant('RECORDINGNOWTEXT');
@@ -286,10 +301,10 @@ function RecordingController($q,
             // notify QC with last used session (should be same probably)
             //   and if non-existant, use the one we got now, and if non-existant don't move.
             var sessionIdToUse = oldSessionId || sessionId;
-            if (sessionIdToUse) {
-              qcService.notifySend( sessionIdToUse, 
-                                    dataService.get('speakerInfo').tokensRead || 0);
-            }
+           // if (sessionIdToUse) {
+           //   qcService.notifySend( sessionIdToUse, 
+          //                          dataService.get('speakerInfo').tokensRead || 0);
+           // }
 
             var announcement = notifService.notifySend(dataService.get('speakerInfo').tokensRead || 0);
             if (announcement) {
