@@ -76,7 +76,7 @@ function RecordingController($q,
   recCtrl.showSkipBtn = false;
   recCtrl.action = action;
   recCtrl.skip = skip;
-  $scope.skipText = util.getConstant('SKIPTEXT');
+  $scope.skipText = util.getConstant('GETNEXTTEXT');
   $scope.promptsReadText = util.getConstant('PROMPTSREADTEXT');
   $scope.utteranceQuality = util.getConstant('UTTQUALITYTEXT');
   $scope.utteranceUploaded = util.getConstant('UTTUPLOADEDTEXT');

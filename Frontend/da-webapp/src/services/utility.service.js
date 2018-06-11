@@ -74,6 +74,7 @@ function utilityService(logger) {
     //evaluation 
     'PLAYTEXT' : 'Spila', //'Play',
     'PAUSETEXT' : 'Stoppa', //'Pause',
+    'SKIPTEXT' : 'Sleppa',  //'Skip',
     'NOTOKENTEXT' : 'Textabrot enn ósótt.',  //'No prompt yet.',
     'GRADECOMPLETETEXT' : 'Einkunnagjöf fyrir sett lokið. Kærar þakkir.',  //'Grading set complete. Thank you.',
     'GRADETEXT' : 'Einkunn',  //'Grade',
@@ -126,7 +127,7 @@ function utilityService(logger) {
     //recording
      'RECTEXT' : 'Byrja upptöku', //'Rec', //text under rec button
      'STOPTEXT' : 'Stoppa upptöku',  //'Stop',
-     'SKIPTEXT' : 'Fá annan texta',  //'Skip',
+     'GETNEXTTEXT' : 'Fá annan texta',  //'Skip',
      'PROMPTSREADTEXT' : 'Lesnir textar:',  //'Prompts read',
      'UTTQUALITYTEXT' : 'Gæði lesinna frasa',  //'Quality of utts',
      'UTTUPLOADEDTEXT' : 'Frösum hlaðið upp',  //'Utterances uploaded',
