@@ -130,7 +130,7 @@ function utilityService(logger) {
      'PROMPTSREADTEXT' : 'Lesnir textar:',  //'Prompts read',
      'UTTQUALITYTEXT' : 'Gæði lesinna frasa',  //'Quality of utts',
      'UTTUPLOADEDTEXT' : 'Frösum hlaðið upp',  //'Utterances uploaded',
-     'INITTOKENTEXT' : 'Smelltu á \'Taka upp\' til að fá textabrot',  //'Hit \'Rec\' for prompt',
+     'INITTOKENTEXT' : 'Smelltu á \'Byrja upptöku\' til að fá textabrot',  //'Hit \'Rec\' for prompt',
      'RECORDINGNOWTEXT' : 'Tek upp...',  //'Recording now...',
      'WAITINGFORTOKENTEXT' : 'Bíð eftir nýju textabroti...',  //'Waiting for new token...',
      'TOKENSKIPPEDTEXT' : 'Textabroti sleppt',  //'Token skipped',
