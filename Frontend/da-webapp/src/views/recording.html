@@ -17,10 +17,10 @@ File author/s:
     Matthias Petursson <oldschool01123@gmail.com>
 -->
 
-<div class="content vertical-center">
+<div class="content recorder-content-wrapper">
     <div class="recording-view">
         <div class="skip-btn-wrapper">
-            <button class="btn btn-skip-ctrl {{noHover}}" type="button" ng-disabled="recCtrl.skipBtnDisabled" ng-click="recCtrl.skip()">
+            <button class="btn btn-skip-ctrl {{noHover}}" type="button" ng-if="recCtrl.showSkipBtn" ng-disabled="recCtrl.skipBtnDisabled" ng-click="recCtrl.skip()">
                 <p>{{skipText}}</p>
             </button>
         </div>
@@ -33,14 +33,9 @@ File author/s:
                     <p>{{actionText}}</p>
                 </button>
         </div>
-        <div class="mic-icon-wrapper">
-            <img class="" src="img/mic.png" alt="A mic." ng-if="recCtrl.showMic">
-        </div>
         <div class="recording-wrapper">
             <div class="feedbackDisplay">
                 <canvas id="volume-meter" width="200" height="50"></canvas>
-    
-              
                 <!-- <meter id="accMeter" min="0.0" max="1.0" value="{{recCtrl.accuracy}}" low="{{recCtrl.lowThreshold}}" high="{{recCtrl.highThreshold}}" optimum="1.0" title="accuracy"></meter> -->
                 <!-- <p>{{promptsReadText}} {{tokensRead}}</p> -->
             </div>

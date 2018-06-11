@@ -73,7 +73,7 @@ function RecordingController($q,
   var volService = volumeMeterService;
 
   $scope.recordingWrapperBorder = 'not-recording-border';
-  recCtrl.showMic = false;
+  recCtrl.showSkipBtn = false;
   recCtrl.action = action;
   recCtrl.skip = skip;
   $scope.skipText = util.getConstant('SKIPTEXT');
@@ -219,7 +219,7 @@ function RecordingController($q,
 
   function toggleActionBtn() {
     if (actionType === 'record') {
-      recCtrl.showMic = true;
+      recCtrl.showSkipBtn = true;
       $scope.noHover = 'nohover';
       $scope.recAction = 'btn-record-action';
       $scope.recordingWrapperBorder = 'recording-border';
@@ -228,7 +228,7 @@ function RecordingController($q,
       $scope.actionGlyph = STOPGLYPH;
       $scope.hide_playback = true;
     } else if (actionType === 'stop') {
-      recCtrl.showMic = false;
+      recCtrl.showSkipBtn = false;
       $scope.noHover = '';
       $scope.recAction = 'btn-stop-action';
       $scope.recordingWrapperBorder = 'not-recording-border';
