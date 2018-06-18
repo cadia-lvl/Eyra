@@ -214,6 +214,7 @@ function RecordingController($q,
   }
 
   // callback, called by qc service
+  //uncomment for quality checking
   /*
   function qcDataReady(data) {
     recCtrl.accuracy = data.avgAcc;
