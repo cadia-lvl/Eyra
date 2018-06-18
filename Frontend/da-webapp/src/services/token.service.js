@@ -41,7 +41,8 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
   tokenHandler.countAvailableTokens = countAvailableTokens;
   tokenHandler.getTokens = getTokens;
   tokenHandler.nextToken = nextToken;
-
+  tokenHandler.areTokens = areTokens;
+  tokenHandler.noMoreToken = false;
   return tokenHandler;
 
   //////////
@@ -90,6 +91,7 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
   // returns promise, 
   function getTokens(numTokens) {
     var tokensPromise = $q.defer();
+    tokenHandler.noMoreToken = false;
     // query server for tokens
     delService.getTokens(numTokens)
     .then(
@@ -111,6 +113,10 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
     return tokensPromise.promise;
   }
 
+  function areTokens() {
+    return tokenHandler.noMoreToken;
+  }
+
   function nextToken() {
     var next = $q.defer();
     lfService.getItem('minFreeTokenIdx').then(function(value) {
@@ -120,8 +126,10 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
       lfService.getItem('tokens/' + minFreeIdx).then(function(value){
         if (value) {
           next.resolve(value);
+          tokenHandler.noMoreToken = false;
         } else {
           next.resolve({'id':0, 'token': util.getConstant('NOMORETOKENSTEXT')});
+          tokenHandler.noMoreToken = true;
         }
 
         // update our minFreeIdx

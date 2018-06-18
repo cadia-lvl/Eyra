@@ -202,7 +202,7 @@ body {
   font-weight: bold;
   font-size: 1.5em;
   overflow-y: auto;
-  max-height: 200px;
+  max-height: 250px;
 }
 
 .speaker-info-choice{
@@ -304,6 +304,21 @@ body {
   text-align: center;
   color: #FFFFFF;
   background-color: #548235;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  padding-top: 5px;
+}
+
+.btn-get-tokens-ctrl{
+  padding: auto;
+  border-radius: 10px;
+  font-weight: bold;
+  width: 100%;
+  height: 3em;
+  border: 2px solid #06143f;
+  text-align: center;
+  color: #FFFFFF;
+  background-color: #337ab7;
   margin-top: 2em;
   margin-bottom: 2em;
   padding-top: 5px;

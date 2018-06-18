@@ -29,8 +29,11 @@ File author/s:
         </div>
         <!-- action = rec or stop -->
         <div class="record-btn-wrapper">
-                <button class="btn-rec-action-ctrl {{recAction}}" type="button" ng-disabled="recCtrl.actionBtnDisabled" ng-click="recCtrl.action()">
+                <button class="btn-rec-action-ctrl {{recAction}}" type="button" ng-if= "!recCtrl.noMoreTokens" ng-disabled="recCtrl.actionBtnDisabled || recCtrl.noMoreTokens" ng-click="recCtrl.action()">
                     <p>{{actionText}}</p>
+                </button>
+                <button class="btn-get-tokens-ctrl" type="button" ng-if="recCtrl.noMoreTokens" ng-click="recCtrl.getTokens()">
+                    {{getMoreTokens}}
                 </button>
         </div>
         <div class="recording-wrapper">

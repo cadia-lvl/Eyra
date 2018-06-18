@@ -75,9 +75,11 @@ function RecordingController($q,
   $scope.recordingWrapperBorder = 'not-recording-border';
   recCtrl.showSkipBtn = false;
   recCtrl.action = action;
+  recCtrl.getTokens = getTokens;
   recCtrl.skip = skip;
   $scope.skipText = util.getConstant('GETNEXTTEXT');
   $scope.promptsReadText = util.getConstant('PROMPTSREADTEXT');
+  $scope.getMoreTokens = util.getConstant('GETMORETOKENSTEXT');
   $scope.utteranceQuality = util.getConstant('UTTQUALITYTEXT');
   $scope.utteranceUploaded = util.getConstant('UTTUPLOADEDTEXT');
 
@@ -86,6 +88,7 @@ function RecordingController($q,
   $scope.msg = ''; // single debug/information msg
   recCtrl.curRec = recService.currentRecording;
 
+  recCtrl.noMoreTokens = tokenService.areTokens();
   recCtrl.actionBtnDisabled = false;
   recCtrl.skipBtnDisabled = true;
   var speaker = dataService.get('speakerName');
@@ -144,11 +147,13 @@ function RecordingController($q,
 
   // signifies the combined rec/stop button
   function action() {
+    
     if (actionType === 'record') {
       record();
     } else if (actionType === 'stop') {
       stop(true);
     }
+    recCtrl.noMoreTokens = tokenService.areTokens();
   }
 
   function asyncTokenRead(speaker, increment){
@@ -384,6 +389,17 @@ function RecordingController($q,
       // updating tokenRead in ldb and ram
       asyncTokenRead(speaker, $scope.tokensRead);
     }
+  }
+
+  function getTokens() {
+    $scope.msg = util.getConstant('GETTINGTOKENSMSG');
+    tokenService.getTokens(2).then(function(tokens){
+      alert(util.getConstant('TOKENSACQUIREDALERT'));
+      $scope.msg = util.getConstant('TOKENSACQUIREDMSG');
+    },
+    util.stdErrCallback);
+    recCtrl.noMoreTokens = false;
+    recCtrl.displayToken = util.getConstant('CLICKTOCONTINUERECTEXT');
   }
 
   function tokensRead(speaker) {

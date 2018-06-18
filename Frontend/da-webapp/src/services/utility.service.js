@@ -136,7 +136,9 @@ function utilityService(logger) {
      'WAITINGFORTOKENTEXT' : 'Bíð eftir nýju textabroti...',  //'Waiting for new token...',
      'TOKENSKIPPEDTEXT' : 'Textabroti sleppt',  //'Token skipped',
      'STOPPEDTEXT' : 'Stöðvað',  //'Stopped',
-     'NOMORETOKENSTEXT' : 'Engin fleiri textabrot. Endurræstu forritið með nettengingu fyrir fleiri.',  //'No more tokens. Restart app with internet connection for more.',
+     "GETMORETOKENSTEXT" : 'Sækja textabrot', // 'Get tokens',
+     'NOMORETOKENSTEXT' : 'Engin fleiri textabrot. Stoppaðu fyrst upptökuna og smelltu svo á \'Sækja textabrot\' til að fá fleiri.',  //'No more tokens. Restart app with internet connection for more.',
+     'CLICKTOCONTINUERECTEXT' : 'Smelltu á \'Byrja upptöku\' til að hefja upptöku að nýju', //'Click \'Record \' to resume recording
      //register device
      'IMEIDEVICETEXT' : 'IMEI/Device ID',  //'IMEI/Device ID',
      'DEVICEINFOALERT' : 'Upplýsingar tækis skráðar!',  //'Device info submitted!',
