@@ -387,6 +387,7 @@ function RecordingController($q,
         resolve();
       },
       util.stdErrCallback);
+      
     })
   }
 
@@ -421,10 +422,10 @@ function RecordingController($q,
     tokenService.getTokens(2).then(function(tokens){
       alert(util.getConstant('TOKENSACQUIREDALERT'));
       $scope.msg = util.getConstant('TOKENSACQUIREDMSG');
-      recCtrl.noMoreTokens = false;
-      recCtrl.displayToken = util.getConstant('CLICKTOCONTINUERECTEXT');
     },
     util.stdErrCallback);
+    recCtrl.noMoreTokens = false;
+    recCtrl.displayToken = util.getConstant('CLICKTOCONTINUERECTEXT');
   }
 
   function tokensRead(speaker) {
