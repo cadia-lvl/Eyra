@@ -72,21 +72,27 @@ function RecordingController($q,
   var util = utilityService;
   var volService = volumeMeterService;
 
-  $scope.recordingWrapperBorder = 'not-recording-border';
-  recCtrl.showSkipBtn = false;
+
+  recCtrl.isRecording = false;
   recCtrl.action = action;
-  recCtrl.getTokens = getTokens;
+  recCtrl.start = start;
+  recCtrl.fetchMoreTokens = fetchMoreTokens;
   recCtrl.skip = skip;
   $scope.skipText = util.getConstant('GETNEXTTEXT');
   $scope.promptsReadText = util.getConstant('PROMPTSREADTEXT');
   $scope.getMoreTokens = util.getConstant('GETMORETOKENSTEXT');
   $scope.utteranceQuality = util.getConstant('UTTQUALITYTEXT');
   $scope.utteranceUploaded = util.getConstant('UTTUPLOADEDTEXT');
+  $scope.startSession = util.getConstant('STARTSESSIONTEXT');
+  $scope.actionText = util.getConstant('RECTEXT');
 
   $scope.recAction = 'btn-stop-action';
+  $scope.recordingWrapperBorder = 'not-recording-border';
 
   $scope.msg = ''; // single debug/information msg
   recCtrl.curRec = recService.currentRecording;
+
+  recCtrl.getStarted = false;
 
   recCtrl.noMoreTokens = tokenService.areTokens();
   recCtrl.actionBtnDisabled = false;
@@ -98,11 +104,12 @@ function RecordingController($q,
 
   var RECGLYPH = 'glyphicon-record'; // bootstrap glyph class
   var STOPGLYPH = 'glyphicon-stop';
-  $scope.actionText = util.getConstant('RECTEXT');
+
   $scope.actionGlyph = RECGLYPH;
   $scope.hide_playback = true;
 
   var currentToken = {'id':0, 'token': util.getConstant('INITTOKENTEXT')};
+  var nextToken = {'id':0, 'token': util.getConstant('INITTOKENTEXT')};
   recCtrl.displayToken = currentToken['token'];
 
   sessionService.setStartTime(new Date().toISOString());
@@ -125,7 +132,6 @@ function RecordingController($q,
   activate();
 
   ////////// 
-
   function activate() {
     recService.setupCallbacks(recordingCompleteCallback);
     var res = volService.init(recService.getAudioContext(), recService.getStreamSource());
@@ -147,13 +153,13 @@ function RecordingController($q,
 
   // signifies the combined rec/stop button
   function action() {
-    
+    recCtrl.noMoreTokens = tokenService.areTokens();
+
     if (actionType === 'record') {
       record();
     } else if (actionType === 'stop') {
       stop(true);
     }
-    recCtrl.noMoreTokens = tokenService.areTokens();
   }
 
   function asyncTokenRead(speaker, increment){
@@ -223,25 +229,34 @@ function RecordingController($q,
   }
   */
 
+ function start(){
+  recCtrl.noMoreTokens = tokenService.areTokens();
+
+  recCtrl.getStarted = true;
+
+  currentToken = {'id':0, 'token': util.getConstant('WAITINGFORTOKENTEXT')};    
+
+  getnextToken();
+  $scope.startSession = util.getConstant('STARTAGAINTEXT');
+}
+
   function toggleActionBtn() {
     if (actionType === 'record') {
-      recCtrl.showSkipBtn = true;
-      $scope.noHover = 'nohover';
+      actionType = 'stop';
+      recCtrl.isRecording = true;
       $scope.recAction = 'btn-record-action';
       $scope.recordingWrapperBorder = 'recording-border';
-      actionType = 'stop';
       $scope.actionText = util.getConstant('STOPTEXT');
-      $scope.actionGlyph = STOPGLYPH;
+      //$scope.actionGlyph = STOPGLYPH;
       $scope.hide_playback = true;
     } else if (actionType === 'stop') {
-      recCtrl.showSkipBtn = false;
-      $scope.noHover = '';
+      actionType = 'record';
+      recCtrl.isRecording = false;
       $scope.recAction = 'btn-stop-action';
       $scope.recordingWrapperBorder = 'not-recording-border';
-      actionType = 'record';
       $scope.hide_playback = false;
       $scope.actionText = util.getConstant('RECTEXT');
-      $scope.actionGlyph = RECGLYPH;
+     //$scope.actionGlyph = RECGLYPH;
     }
   }
 
@@ -256,15 +271,7 @@ function RecordingController($q,
     recCtrl.actionBtnDisabled = false;
 
     recService.record();
-
-    currentToken = {'id':0, 'token': util.getConstant('WAITINGFORTOKENTEXT')};    
-
-    // show token on record/newToken button hit
-    tokenService.nextToken().then(function(token){
-      recCtrl.displayToken = token['token'];
-      currentToken = token;
-    },
-    util.stdErrCallback);
+    currentToken = nextToken;  
   }
 
   
@@ -364,11 +371,23 @@ function RecordingController($q,
 
   function skip() {
     $scope.msg = util.getConstant('TOKENSKIPPEDTEXT');
+    getnextToken().then(function(value){
+      recCtrl.noMoreTokens = tokenService.areTokens();
+    })
+  }
 
-    if (currentToken.id !== 0) {
-      stop(false);
-    }
-    record();
+  function getnextToken(){
+    return new Promise(function(resolve, reject) {
+      nextToken = {'id':0, 'token': util.getConstant('WAITINGFORTOKENTEXT')};    
+
+      // show token on record/newToken button hit
+      tokenService.nextToken().then(function(token){
+        recCtrl.displayToken = token['token'];
+        nextToken = token;
+        resolve();
+      },
+      util.stdErrCallback);
+    })
   }
 
   function stop(valid) {
@@ -390,17 +409,22 @@ function RecordingController($q,
       // updating tokenRead in ldb and ram
       asyncTokenRead(speaker, $scope.tokensRead);
     }
+    recCtrl.noMoreTokens = tokenService.areTokens();
+    getnextToken().then(function(value){
+      recCtrl.noMoreTokens = tokenService.areTokens();
+    })
   }
 
-  function getTokens() {
+  function fetchMoreTokens() {
+    recCtrl.getStarted = false;
     $scope.msg = util.getConstant('GETTINGTOKENSMSG');
     tokenService.getTokens(2).then(function(tokens){
       alert(util.getConstant('TOKENSACQUIREDALERT'));
       $scope.msg = util.getConstant('TOKENSACQUIREDMSG');
+      recCtrl.noMoreTokens = false;
+      recCtrl.displayToken = util.getConstant('CLICKTOCONTINUERECTEXT');
     },
     util.stdErrCallback);
-    recCtrl.noMoreTokens = false;
-    recCtrl.displayToken = util.getConstant('CLICKTOCONTINUERECTEXT');
   }
 
   function tokensRead(speaker) {

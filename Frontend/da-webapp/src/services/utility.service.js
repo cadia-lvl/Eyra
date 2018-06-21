@@ -55,7 +55,7 @@ function utilityService(logger) {
 
     'invalidTitle' : 'no_data.wav', // sentinel value for invalid recordings
     'tokenThreshold' : 5, 
-    'tokenGetCount' : 10, 
+    'tokenGetCount' : 2, 
     'QCAccThreshold' : 0.2, // if accuracy falls below this, meter will display red
     'QCFrequency' : 5, // per sessions sent
     'QCInitRecThreshold' : 5, // recording count before QC can report, adjustment period for speaker
@@ -131,14 +131,16 @@ function utilityService(logger) {
      'PROMPTSREADTEXT' : 'Lesnir textar:',  //'Prompts read',
      'UTTQUALITYTEXT' : 'Gæði lesinna frasa',  //'Quality of utts',
      'UTTUPLOADEDTEXT' : 'Frösum hlaðið upp',  //'Utterances uploaded',
-     'INITTOKENTEXT' : 'Smelltu á \'Byrja upptöku\' til að fá textabrot',  //'Hit \'Rec\' for prompt',
+     'INITTOKENTEXT' : 'Smelltu á \'Hefja upptökutörn\' til að fá textabrot',  //'Hit \'Rec\' for prompt',
      'RECORDINGNOWTEXT' : 'Tek upp...',  //'Recording now...',
      'WAITINGFORTOKENTEXT' : 'Bíð eftir nýju textabroti...',  //'Waiting for new token...',
      'TOKENSKIPPEDTEXT' : 'Textabroti sleppt',  //'Token skipped',
      'STOPPEDTEXT' : 'Stöðvað',  //'Stopped',
      "GETMORETOKENSTEXT" : 'Sækja textabrot', // 'Get tokens',
-     'NOMORETOKENSTEXT' : 'Engin fleiri textabrot. Stoppaðu fyrst upptökuna og smelltu svo á \'Sækja textabrot\' til að fá fleiri.',  //'No more tokens. Restart app with internet connection for more.',
-     'CLICKTOCONTINUERECTEXT' : 'Smelltu á \'Byrja upptöku\' til að hefja upptöku að nýju', //'Click \'Record \' to resume recording
+     'STARTSESSIONTEXT' : 'Hefja upptökutörn',  //'Start session',
+     'STARTAGAINTEXT' : 'Byrja aftur',  //'Start session again',
+     'NOMORETOKENSTEXT' : 'Engin fleiri textabrot. Smelltu á \'Sækja textabrot\' til að fá fleiri.',  //'No more tokens. Restart app with internet connection for more.',
+     'CLICKTOCONTINUERECTEXT' : 'Smelltu á \'Byrja aftur\' til að hefja upptökur að nýju', //'Click \'Record \' to resume recording
      //register device
      'IMEIDEVICETEXT' : 'IMEI/Device ID',  //'IMEI/Device ID',
      'DEVICEINFOALERT' : 'Upplýsingar tækis skráðar!',  //'Device info submitted!',
@@ -161,8 +163,8 @@ function utilityService(logger) {
     'SYNCTEXT' : 'Samstilla',  //'Sync',
     'BACKTORECTEXT' : 'Til baka í upptöku',  //'Back to recording',
     'UTTRECTEXT' : 'Frasar hljóðritaðir',  //'Utterances recorded',
-    'UTTUPLTEXT' : 'Frasar hlaðnir upp',  //'Utterances uploaded',
-    'UTTRECNOTUPLTEXT' : 'Frasar hljóðritaðir & ekki hlaðnir upp',  //'Utterances recorded &amp; not uploaded',
+    'UTTUPLTEXT' : 'Frösum hlaðið upp',  //'Utterances uploaded',
+    'UTTRECNOTUPLTEXT' : 'Frasar hljóðritaðir & ekki hlaðið upp',  //'Utterances recorded &amp; not uploaded',
     'PROMPTSDOWNLTEXT' : 'Sótt textabrot',  //'Prompts downloaded:',
      //error messages\
     'SPEAKEREXISTSERRORMSG' : 'Ræðumaður þegar í gagnagrunni. Veldu annað nafn, nema þú hafir gert þetta áður á þessu tæki, hakaðu þá í boxið.',  //'Speaker already in database. Choose a different name, unless you have done this before on this device, then tick the box.',
