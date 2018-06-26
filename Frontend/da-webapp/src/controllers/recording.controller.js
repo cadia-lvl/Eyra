@@ -94,7 +94,7 @@ function RecordingController($q,
 
   recCtrl.getStarted = false;
 
-  recCtrl.noMoreTokens = tokenService.areTokens();
+  recCtrl.noMoreTokens = false;
   recCtrl.actionBtnDisabled = false;
   recCtrl.skipBtnDisabled = true;
   var speaker = dataService.get('speakerName');
@@ -172,7 +172,6 @@ function RecordingController($q,
 
     miscDbService.getSpeaker(speaker).then(
       function success(speakerInfo) {
-        //console.info(speakerInfo);
         if (increment === 'return'){
           if (speakerInfo && speakerInfo['tokensRead']) {
             ramSpeakerInfo['tokensRead'] = speakerInfo['tokensRead'];
@@ -230,14 +229,18 @@ function RecordingController($q,
   */
 
  function start(){
-  recCtrl.noMoreTokens = tokenService.areTokens();
-
-  recCtrl.getStarted = true;
-
-  currentToken = {'id':0, 'token': util.getConstant('WAITINGFORTOKENTEXT')};    
-
-  getnextToken();
-  $scope.startSession = util.getConstant('STARTAGAINTEXT');
+  tokenService.countAvailableTokens().then(function(value) {
+    
+    if(value > 0) {
+      recCtrl.noMoreTokens = false;
+    } else {
+      recCtrl.noMoreTokens = true;
+    } 
+    recCtrl.getStarted = true;
+    currentToken = {'id':0, 'token': util.getConstant('WAITINGFORTOKENTEXT')};    
+    getnextToken();
+    $scope.startSession = util.getConstant('STARTAGAINTEXT');
+  })
 }
 
   function toggleActionBtn() {
@@ -413,19 +416,32 @@ function RecordingController($q,
     recCtrl.noMoreTokens = tokenService.areTokens();
     getnextToken().then(function(value){
       recCtrl.noMoreTokens = tokenService.areTokens();
-    })
+    },
+    util.stdErrCallback);
   }
 
   function fetchMoreTokens() {
-    recCtrl.getStarted = false;
+    recCtrl.displayToken = util.getConstant('GETTINGTOKENSMSG');
     $scope.msg = util.getConstant('GETTINGTOKENSMSG');
-    tokenService.getTokens(2).then(function(tokens){
-      alert(util.getConstant('TOKENSACQUIREDALERT'));
-      $scope.msg = util.getConstant('TOKENSACQUIREDMSG');
+    tokenService.getTokens(util.getConstant('tokenGetMoreCount')).then(function(tokens){
+      return new Promise(function(resolve, reject){
+        alert(util.getConstant('TOKENSACQUIREDALERT'));
+        $scope.msg = util.getConstant('TOKENSACQUIREDMSG');
+        recCtrl.noMoreTokens = tokenService.areTokens();
+        resolve();
+      })
+    },
+    util.stdErrCallback).then(function(){
+      if(!recCtrl.noMoreTokens){
+        recCtrl.getStarted = false;
+        recCtrl.displayToken = util.getConstant('CLICKTOCONTINUERECTEXT');
+      } else{
+        recCtrl.displayToken = util.getConstant('FAILEDTOGETTOKENS');
+        $scope.msg = util.getConstant('SOMETINGWRONGERRORMSG');
+      }
     },
     util.stdErrCallback);
-    recCtrl.noMoreTokens = false;
-    recCtrl.displayToken = util.getConstant('CLICKTOCONTINUERECTEXT');
+
   }
 
   function tokensRead(speaker) {

@@ -42,7 +42,7 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
   tokenHandler.getTokens = getTokens;
   tokenHandler.nextToken = nextToken;
   tokenHandler.areTokens = areTokens;
-  tokenHandler.noMoreToken = false;
+  tokenHandler.noMoreToken = true;
   return tokenHandler;
 
   //////////
@@ -61,9 +61,10 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
           }
         }
         promises.push(
-          lfService.setItem('minFreeTokenIdx', 0)
+          lfService.setItem('minFreeTokenIdx', -1)
             .then(angular.noop, util.stdErrCallback)
         );
+        tokenHandler.noMoreToken = true;
         return $q.all(promises);
       },
       util.stdErrCallback
@@ -75,7 +76,7 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
     var isAvail = $q.defer();
     lfService.getItem('minFreeTokenIdx').then(
       function success(idx){
-        if (idx && idx >= 0) {
+        if (idx !== null && idx >= 0) {
           isAvail.resolve(idx + 1);
         } else {
           isAvail.resolve(0);
@@ -90,8 +91,8 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
 
   // returns promise, 
   function getTokens(numTokens) {
+    tokenHandler.noMoreToken = true;
     var tokensPromise = $q.defer();
-    tokenHandler.noMoreToken = false;
     // query server for tokens
     delService.getTokens(numTokens)
     .then(
@@ -101,6 +102,7 @@ function tokenService($q, deliveryService, logger, myLocalForageService, utility
         // some validation of 'data'
         var tokens = response.data;
         if (tokens && tokens.length > 0) {
+          tokenHandler.noMoreToken = false;
           saveTokens(tokens, tokensPromise); // save to local forage
         } else {
           tokensPromise.reject('Tokens from server not on right format or empty.');

@@ -55,7 +55,8 @@ function utilityService(logger) {
 
     'invalidTitle' : 'no_data.wav', // sentinel value for invalid recordings
     'tokenThreshold' : 5, 
-    'tokenGetCount' : 2, 
+    'tokenGetCount' : 10,
+    'tokenGetMoreCount' : 100,  
     'QCAccThreshold' : 0.2, // if accuracy falls below this, meter will display red
     'QCFrequency' : 5, // per sessions sent
     'QCInitRecThreshold' : 5, // recording count before QC can report, adjustment period for speaker
