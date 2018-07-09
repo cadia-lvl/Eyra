@@ -111,7 +111,7 @@ function RecordingController($q,
   recCtrl.skipBtnDisabled = true;
 
   //variables used for exit screem
-  recCtrl.fall = action;
+  recCtrl.actionFunction = action;
   recCtrl.quit = false;
 
   var speaker = dataService.get('speakerName');
