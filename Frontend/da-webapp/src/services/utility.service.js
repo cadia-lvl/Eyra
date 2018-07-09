@@ -62,6 +62,7 @@ function utilityService(logger) {
     'QCInitRecThreshold' : 5, // recording count before QC can report, adjustment period for speaker
     'QCHighThreshold' : 0.7, // if accuracy falls below this, meter will display yellow instead of green
     'tokenAnnouncementFreq' : 500,
+    'sessionTime' : 1800, //time for each session in seconds
     'tokenCountGoal' : 500, // how many prompts should a user read?
     'syncRecCountPerSend' : 5, // recs to send each transmission to server during a Sync operation,
     'evalBufferSize' : 5, // number of prompts and/or recs to fetch and keep in memory during evaluation
@@ -137,11 +138,18 @@ function utilityService(logger) {
      'WAITINGFORTOKENTEXT' : 'Bíð eftir nýju textabroti...',  //'Waiting for new token...',
      'TOKENSKIPPEDTEXT' : 'Textabroti sleppt',  //'Token skipped',
      'STOPPEDTEXT' : 'Stöðvað',  //'Stopped',
+     'QUTITEXT' : 'Hætta',  //'Quit',
      "GETMORETOKENSTEXT" : 'Sækja textabrot', // 'Get tokens',
      'STARTSESSIONTEXT' : 'Hefja upptökutörn',  //'Start session',
      'STARTAGAINTEXT' : 'Byrja aftur',  //'Start session again',
      'NOMORETOKENSTEXT' : 'Engin fleiri textabrot. Smelltu á \'Sækja textabrot\' til að fá fleiri.',  //'No more tokens. Restart app with internet connection for more.',
      'CLICKTOCONTINUERECTEXT' : 'Smelltu á \'Byrja aftur\' til að hefja upptökur að nýju', //'Click \'Record \' to resume recording
+     'SESSIONOVERTEXT' : 'Upptökutímabili er lokið, takk fyrir þátttökuna',  //'Recording session is over, thank you for your help',
+     'CLOSEPROGRAMTEXT' : 'Loka upptökutörn',  //'Close session',
+     'THXMSGTEXT' : 'Takk fyrir þátttökuna',  //'Thank you for your participation',
+     'CLOSECONFIRMATIONTEXT' : 'Ertu viss um að vilja hætta í forritinu?',  //'Are you sure you want to quit session',
+     'TIMERTEXT' : 'Tími',  //'Timer',
+     'KEEPRECORDINGTEXT' : 'Halda upptökum áfram',  //'Keep recording',
      //register device
      'IMEIDEVICETEXT' : 'IMEI/Device ID',  //'IMEI/Device ID',
      'DEVICEINFOALERT' : 'Upplýsingar tækis skráðar!',  //'Device info submitted!',

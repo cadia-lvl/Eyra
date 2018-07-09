@@ -26,6 +26,7 @@ angular.module('daApp')
 
 RecordingController.$inject = [ '$q',
                                 '$uibModal',
+                                '$location', 
                                 '$rootScope',
                                 '$scope', 
                                 'androidRecordingService',
@@ -40,11 +41,12 @@ RecordingController.$inject = [ '$q',
                                 'sessionService',
                                 'tokenService',
                                 'utilityService',
-                                'volumeMeterService',
+                                //'volumeMeterService',
                                 'CACHEBROKEN_REPORT'];
 
 function RecordingController($q, 
                              $uibModal, 
+                             $location,
                              $rootScope, 
                              $scope, 
                              androidRecordingService, 
@@ -59,7 +61,7 @@ function RecordingController($q,
                              sessionService, 
                              tokenService, 
                              utilityService, 
-                             volumeMeterService, 
+                             //volumeMeterService, 
                              CACHEBROKEN_REPORT) {
   var recCtrl = this;
   // fix for android audio filtering (8k) through browser recording, in case of webview (in our android app)
@@ -70,14 +72,20 @@ function RecordingController($q,
   var notifService = notificationService;
   var miscDbService = localDbMiscService;
   var util = utilityService;
-  var volService = volumeMeterService;
+  //var volService = volumeMeterService;
 
-
+  //functions
   recCtrl.isRecording = false;
   recCtrl.action = action;
   recCtrl.start = start;
   recCtrl.fetchMoreTokens = fetchMoreTokens;
   recCtrl.skip = skip;
+  recCtrl.quitAction = quitAction;
+  recCtrl.backToRecording = backToRecording;
+  recCtrl.actionFunction = action;
+  recCtrl.toMainPage = toMainPage;
+  
+  //String constants 
   $scope.skipText = util.getConstant('GETNEXTTEXT');
   $scope.promptsReadText = util.getConstant('PROMPTSREADTEXT');
   $scope.getMoreTokens = util.getConstant('GETMORETOKENSTEXT');
@@ -85,18 +93,27 @@ function RecordingController($q,
   $scope.utteranceUploaded = util.getConstant('UTTUPLOADEDTEXT');
   $scope.startSession = util.getConstant('STARTSESSIONTEXT');
   $scope.actionText = util.getConstant('RECTEXT');
+  $scope.timerText = util.getConstant('TIMERTEXT');
+  $scope.recordMore = util.getConstant('KEEPRECORDINGTEXT');
+  $scope.quitText = util.getConstant('QUTITEXT');
 
+  //constants for html classes
   $scope.recAction = 'btn-stop-action';
   $scope.recordingWrapperBorder = 'not-recording-border';
 
   $scope.msg = ''; // single debug/information msg
   recCtrl.curRec = recService.currentRecording;
 
+  //logic variables for visible buttons
   recCtrl.getStarted = false;
-
   recCtrl.noMoreTokens = false;
   recCtrl.actionBtnDisabled = false;
   recCtrl.skipBtnDisabled = true;
+
+  //variables used for exit screem
+  recCtrl.fall = action;
+  recCtrl.quit = false;
+
   var speaker = dataService.get('speakerName');
   $scope.tokensRead = tokensRead(speaker); // fetch tokenRead for current speaker/user
 
@@ -104,12 +121,16 @@ function RecordingController($q,
 
   var RECGLYPH = 'glyphicon-record'; // bootstrap glyph class
   var STOPGLYPH = 'glyphicon-stop';
+  var page = window.location.href;
 
   $scope.actionGlyph = RECGLYPH;
   $scope.hide_playback = true;
 
+  //initializing token
+  //current token is sent to database, next token is displayed
+  //before rec button is pressed
   var currentToken = {'id':0, 'token': util.getConstant('INITTOKENTEXT')};
-  var nextToken = {'id':0, 'token': util.getConstant('INITTOKENTEXT')};
+  var nextToken = {'id':0, 'token': util.getConstant('INITTOKENTEXT')}; 
   recCtrl.displayToken = currentToken['token'];
 
   sessionService.setStartTime(new Date().toISOString());
@@ -126,16 +147,26 @@ function RecordingController($q,
   recCtrl.highThreshold = util.getConstant('QCHighThreshold') || 0.7;
   recCtrl.lowerUtt = '?';
   recCtrl.upperUtt = '?';
-
   $scope.recsDelivered = 0;
+
+  //variables for timer
+  recCtrl.currTime = 0; 
+  recCtrl.lowTime = util.getConstant('sessionTime')*0.3;
+  recCtrl.highTime = util.getConstant('sessionTime')*0.7;
+  recCtrl.sessionTime = util.getConstant('sessionTime');
+  recCtrl.first = true;
+  $scope.minutes = '00';
+  $scope.seconds = '00';
+
+  var refreshTimer;
 
   activate();
 
   ////////// 
   function activate() {
     recService.setupCallbacks(recordingCompleteCallback);
-    var res = volService.init(recService.getAudioContext(), recService.getStreamSource());
-    if (!res) logger.log('Volume meter failed to initialize.');
+   // var res = volService.init(recService.getAudioContext(), recService.getStreamSource());
+   // if (!res) logger.log('Volume meter failed to initialize.');
     //qcService.setupCallbacks(qcDataReady);
 
     // get recsDelivered, first check RAM, then ldb
@@ -150,6 +181,38 @@ function RecordingController($q,
     
     $rootScope.isLoaded = true; // is page loaded?  
   }
+
+  function timer(){
+    if(recCtrl.currTime < recCtrl.sessionTime + 1){
+      if(page === window.location.href){
+        $scope.$apply();
+        recCtrl.currTime++; 
+        $scope.minutes = Math.floor(recCtrl.currTime / 60);
+        if($scope.minutes < 10){
+          $scope.minutes = '0' + $scope.minutes;
+        }
+        $scope.seconds = recCtrl.currTime % 60;
+        if($scope.seconds < 10){
+          $scope.seconds = '0' + $scope.seconds;
+        }
+  
+        if(recCtrl.currTime > recCtrl.sessionTime){
+          if (actionType === 'stop') {
+            toggleActionBtn();
+            stop(false);
+          }
+          recCtrl.quit = true;
+          recCtrl.actionFunction = toMainPage;
+          recCtrl.displayToken = util.getConstant('SESSIONOVERTEXT');
+          $scope.actionText = util.getConstant('CLOSEPROGRAMTEXT');
+          $scope.$apply();
+        }
+      }
+      else{
+        clearInterval(refreshTimer);
+      }
+    }
+  };
 
   // signifies the combined rec/stop button
   function action() {
@@ -233,9 +296,13 @@ function RecordingController($q,
     
     if(value > 0) {
       recCtrl.noMoreTokens = false;
+      if(recCtrl.first){
+        var refreshTimer = setInterval(timer, 1000);
+        recCtrl.first = false;
+      }
     } else {
       recCtrl.noMoreTokens = true;
-    } 
+    }
     recCtrl.getStarted = true;
     currentToken = {'id':0, 'token': util.getConstant('WAITINGFORTOKENTEXT')};    
     getnextToken();
@@ -406,18 +473,20 @@ function RecordingController($q,
     }
 
     recService.stop(valid);
+    recCtrl.noMoreTokens = tokenService.areTokens();
 
     // whenever stopped is pressed from gui, it should mean a valid token read.
     if (valid) {
       $scope.tokensRead++; 
       // updating tokenRead in ldb and ram
       asyncTokenRead(speaker, $scope.tokensRead);
+    
+    
+      getnextToken().then(function(value){
+        recCtrl.noMoreTokens = tokenService.areTokens();
+      },
+      util.stdErrCallback);
     }
-    recCtrl.noMoreTokens = tokenService.areTokens();
-    getnextToken().then(function(value){
-      recCtrl.noMoreTokens = tokenService.areTokens();
-    },
-    util.stdErrCallback);
   }
 
   function fetchMoreTokens() {
@@ -443,6 +512,36 @@ function RecordingController($q,
     util.stdErrCallback);
 
   }
+  //This is supposed to terminate current session but I feel like 
+  //it isn't doing enough and perhaps just messes up the database 
+  //and how the sessions and speaker info is saved. I was trying 
+  //to better figure out how sessions work but it took alot of time.
+  function toMainPage(){
+    localStorage.removeItem('lf/speakers/' + speaker);
+    $rootScope.agreementSigned = false;
+    $location.path('/main');
+  }
+
+  function quitAction(){
+    recCtrl.displayToken = util.getConstant('CLOSECONFIRMATIONTEXT');
+    recCtrl.quit = true;
+    recCtrl.actionFunction = toMainPage;
+    recCtrl.displayToken = util.getConstant('THXMSGTEXT');
+    $scope.actionText = util.getConstant('CLOSEPROGRAMTEXT');
+  }
+
+  function backToRecording(){
+    $scope.actionText = util.getConstant('RECTEXT');
+    start();
+    recCtrl.actionFunction = action;
+    recCtrl.quit = false;
+    if(recCtrl.currTime > recCtrl.sessionTime){
+      $scope.minutes = '00';
+      $scope.seconds = '00';
+      recCtrl.currTime = 0;
+    }
+  }
+
 
   function tokensRead(speaker) {
     // input is speaker fetched from ram

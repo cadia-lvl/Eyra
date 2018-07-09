@@ -20,7 +20,7 @@ File author/s:
 <div class="content recorder-content-wrapper">
     <div class="recording-view">
         <div class="skip-btn-wrapper">
-            <button class="btn btn-skip-ctrl" type="button" ng-if="!recCtrl.isRecording && recCtrl.getStarted && !recCtrl.noMoreTokens" ng-disabled="!recCtrl.skipBtnDisabled" ng-click="recCtrl.skip()">
+            <button class="btn btn-skip-ctrl" type="button" ng-if="!recCtrl.isRecording && recCtrl.getStarted && !recCtrl.noMoreTokens && !recCtrl.quit" ng-disabled="!recCtrl.skipBtnDisabled" ng-click="recCtrl.skip()">
                 <p>{{skipText}}</p>
             </button>
         </div>
@@ -32,17 +32,25 @@ File author/s:
                 <button class="btn-session-start-ctrl" type="button" ng-if= "!recCtrl.getStarted" ng-disabled="recCtrl.actionBtnDisabled || recCtrl.noMoreTokens" ng-click="recCtrl.start()">
                     <p>{{startSession}}</p>
                     </button>
-                <button class="btn-rec-action-ctrl {{recAction}}" type="button" ng-if= "!recCtrl.noMoreTokens && recCtrl.getStarted && !recCtrl.noMoreTokens" ng-disabled="recCtrl.actionBtnDisabled || recCtrl.noMoreTokens" ng-click="recCtrl.action()">
+                <button class="btn-rec-action-ctrl {{recAction}}" type="button" ng-if= "!recCtrl.noMoreTokens && recCtrl.getStarted && !recCtrl.noMoreTokens" ng-disabled="recCtrl.actionBtnDisabled || recCtrl.noMoreTokens" ng-click="recCtrl.actionFunction()">
                     <p>{{actionText}}</p>
                 </button>
                 <button class="btn-get-tokens-ctrl" type="button" ng-if="recCtrl.noMoreTokens" ng-click="recCtrl.fetchMoreTokens()">
                     <p>{{getMoreTokens}}</p>
                 </button>
+                <button class="btn-back-ctrl" type="button" ng-if="recCtrl.quit" ng-click="recCtrl.backToRecording()">
+                    <p>{{recordMore}}</p>
+                </button>
                 <img class="img-responsive rec-img" src="img/mic.gif" alt="A mic."  ng-if="recCtrl.isRecording">
         </div>
-        <div class="recording-wrapper">
+        <div class="recording-wrapper" >
+            <div class="timer-wrapper" ng-hide="recCtrl.quit">
+                <p class="timer-label">{{timerText}}: {{minutes}}:{{seconds}}</p>
+                <p class="styled">
+                    <meter id="timer" min="0.0" max="{{recCtrl.sessionTime}}" value="{{recCtrl.currTime}}" low="{{recCtrl.lowTime}}" high="{{recCtrl.highTime}}" optimum="{{recCtrl.sessionTime}}" title="timer"></meter>
+                </p>
+            </div>
             <div class="feedbackDisplay">
-                <canvas id="volume-meter" width="200" height="50"></canvas>
                 <!-- <meter id="accMeter" min="0.0" max="1.0" value="{{recCtrl.accuracy}}" low="{{recCtrl.lowThreshold}}" high="{{recCtrl.highThreshold}}" optimum="1.0" title="accuracy"></meter> -->
                 <!-- <p>{{promptsReadText}} {{tokensRead}}</p> -->
             </div>
@@ -58,9 +66,12 @@ File author/s:
             <meter id="accMeter" min="0.0" max="1.0" value="{{recCtrl.accuracy}}" low="{{recCtrl.lowThreshold}}" high="{{recCtrl.highThreshold}}" optimum="1.0" title="accuracy"></meter>
             <label for="accMeter">{{utteranceQuality}}: {{recCtrl.lowerUtt}} - {{recCtrl.upperUtt}}</label>-->
         <!-- </div> -->
-        <div>
+        <div ng-if="!recCtrl.quit">
             <p ng-if="!recCtrl.isRecording">{{promptsReadText}} {{tokensRead}}</p>
             <p class="message">{{msg}}</p>
+            <button class="btn btn-quit-action" type="button" ng-if= "!recCtrl.isRecording && recCtrl.getStarted" ng-click="recCtrl.quitAction()">
+                <p>{{quitText}}</p>
+            </button>
         </div>
 
     </div>
