@@ -564,6 +564,104 @@ class DbHandler:
             log('There was an error: {}, not committing to MySQL database.'.format(error))
             return dict(msg=error, statusCode=errorStatusCode)
 
+    def processQcData(self, recordingId, grade):
+        print(recordingId)
+        
+        # can be a number of messages, depending on the error.
+        # sent back to the user, and used as a flag to see
+        
+        low = 'Low'
+        medium = 'Medium'
+        high = 'High'
+        ungraded = 'Ungraded'
+        error = '' 
+        errorStatusCode = 400 # modified if something else
+
+        if grade >= 90:
+            evalSet = high
+
+        elif 60 <= grade < 90:
+            evalSet = medium
+
+        elif 0 <= grade <= 60:
+            evalSet = low
+        
+        else:
+            evalSet = ungraded
+            error = 'ungraded'
+
+        if type(recordingId)!=int or type(grade)!=int:
+            msg = 'No grade received, aborting.'
+            log(msg)
+            return dict(msg=msg, statusCode=400)
+
+        if not error:
+            try:
+                # insert into recording
+                cur = self.mysql.connection.cursor()
+
+                # firstly, check if this session already exists, if so, update end time, otherwise add session
+                cur.execute('SELECT id FROM recording WHERE \
+                             id=%s',
+                            (recordingId,))
+                recording = cur.fetchone()
+                if recording is None:
+                    msg = 'No such recording.'
+                    log(msg)
+                    return dict(msg=msg, statusCode=400)
+                else:
+                    # session already exists, simply update end-time
+                    recording = recording[0] # fetchone() returns tuple
+                    cur.execute('UPDATE recording \
+                                 SET qcGrade=%s \
+                                 WHERE id=%s', 
+                                (grade, recording))
+
+                if not error:
+                    try:
+                        # insert into recording
+                        cur = self.mysql.connection.cursor()
+
+                        # firstly, check if this session already exists, if so, update end time, otherwise add session
+                        cur.execute('SELECT id FROM evaluation_sets WHERE \
+                                    recordingId=%s AND eval_set=%s',
+                                    (recordingId,evalSet))
+                        evaluation = cur.fetchone()
+                        if evaluation is None:
+                            cur.execute('INSERT INTO evaluation_sets (eval_set, recordingId) \
+                                    VALUES \
+                                        (%s,%s)',
+                                    (evalSet,recordingId,))
+                        else:
+                            # session already exists, simply update end-time
+                            msg = 'Recording already in evaluationset.'
+                            log(msg)
+                            return dict(msg=msg, statusCode=400)
+                
+                    except MySQLError as e:
+                        error = 'Error inserting recording in evaluationset in database.'
+                        errorStatusCode = 500
+                        log(error, e)
+
+            except MySQLError as e:
+                error = 'Error inserting grade into database.'
+                errorStatusCode = 500
+                log(error, e)
+
+        # only commit if we had no exceptions until this point
+        # and no error
+        if not error:
+            self.mysql.connection.commit()
+
+            return dict(msg='Success', 
+                    statusCode=200)
+        else:
+            log('There was an error: {}, not committing to MySQL database.'.format(error))
+            return dict(msg=error, statusCode=errorStatusCode)
+        
+
+
+    
     def writeRecToFilesystem(self, rec, token, sessionId, speakerName, lost=False):
         """
         Writes rec (as .wav) and token (as .txt with same name as rec) to filesystem at 

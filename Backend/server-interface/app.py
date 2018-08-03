@@ -21,7 +21,9 @@ import json
 from db_handler import DbHandler
 from auth_handler import AuthHandler
 from qc.qc_handler import QcHandler
-
+from qc.scripts.runQC import QcRunner
+import qc.scripts.runQCOffline as runQC
+from qc.qc_sorter import QcSorter
 from util import log
 
 app = Flask(__name__)
@@ -30,9 +32,10 @@ app = Flask(__name__)
 app.config['MAIN_RECORDINGS_PATH'] = '/data/eyra/recordings'
 
 dbHandler = DbHandler(app)
+qcSorter = QcSorter(app, dbHandler)
 authHandler = AuthHandler(app) # sets up /auth/login @app.route and @login_required()
-qcHandler = QcHandler(app, dbHandler)
-
+qcHandler = QcHandler(app, dbHandler, qcSorter)
+qcRunner = QcRunner(app, dbHandler,qcHandler,qcSorter)
 # SUBMISSION ROUTES
 
 @app.route('/submit/general/<method>', methods=['POST'])
@@ -173,6 +176,7 @@ def qc_report(sessionId):
         }
     """
     if request.method == 'GET':
+        print(sessionId)
         qcReport = qcHandler.getReport(sessionId)
         if qcReport:
             return json.dumps(qcReport), 200
@@ -180,6 +184,19 @@ def qc_report(sessionId):
             return 'Session doesn\'t exist', 404
 
     return 'Unexpected error.', 500
+
+
+@app.route('/qc/report/session/all', methods=['GET'])
+def grading():
+    if request.method == 'GET':
+        qcRun = qcRunner.runQC(73, 75, 420, 99999)
+        if qcRun:
+            return 'Success', 200
+        else:
+            return 'Session doesn\'t exist', 404
+
+    return 'Unexpected error.', 500
+
 
 # EVALUATION ROUTES
 

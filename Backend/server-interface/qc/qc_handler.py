@@ -19,8 +19,11 @@
 import redis
 import datetime
 import json
+import sys
 
 #: Relative imports
+#from qc.qc_sorter import sortReports
+from qc.qc_sorter import QcSorter
 from util import log
 from . import config # get our dict with qc module names & qc module functions
 from . import celery_config
@@ -67,7 +70,7 @@ class QcHandler(object):
 
     """
 
-    def __init__(self, app, dbHandler):
+    def __init__(self, app, dbHandler, qcSorter):
         """Initialise a QC handler
 
         config.activeModules should be a dict containing names : function pointers
@@ -77,6 +80,7 @@ class QcHandler(object):
         the instance of the celery class created in app from celery_handler.py
 
         """
+
         self.modules = {module['name'] : module['processFn'] \
                             for k, module in config.activeModules.items()}
 
@@ -86,6 +90,10 @@ class QcHandler(object):
             host=celery_config.const['host'], 
             port=celery_config.const['port'], 
             db=celery_config.const['backend_db'])
+        
+        self.qcSorter = qcSorter
+
+        
 
     def _updateRecordingsList(self, session_id) -> None:
         """
@@ -153,6 +161,7 @@ class QcHandler(object):
         (see client-server API for should be same definition of return)
 
         """
+        
         # check if session exists
         if not self.dbHandler.sessionExists(session_id):
             return None
@@ -220,9 +229,11 @@ class QcHandler(object):
                     pass
 
                 # start the async processing
+                
                 processFn.delay(name, session_id, slistIdx, celery_config.const['batch_size'])
 
         if len(reports) > 0:
+            self.qcSorter.sortReports(reports)
             return dict(sessionId=session_id, status='processing', modules=reports)
         else:
             return dict(sessionId=session_id, status='started', modules={})

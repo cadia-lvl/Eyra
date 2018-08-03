@@ -99,6 +99,7 @@ create table recording (
     sessionId int not null,
     filename varchar(255) not null,
     rec_method varchar(10) not null default 'eyra', -- enable labeling if recordings from other corpora are added to eyra format
+    qcGrade int,
     foreign key (speakerId) references speaker(id),
     foreign key (sessionId) references session(id)
 );
