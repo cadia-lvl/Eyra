@@ -33,6 +33,7 @@ function qcService($q, dataService, deliveryService, logger, utilityService) {
   var util = utilityService;
 
   qcHandler.notifySend = notifySend;
+  qcHandler.notifySendAll = notifySendAll;
   qcHandler.setupCallbacks = setupCallbacks;
   qcHandler.dataReady = function(){}; // needs to be set by calling controller
 
@@ -71,29 +72,38 @@ function qcService($q, dataService, deliveryService, logger, utilityService) {
       modSendCounter = 1;
     }
 
-    if (modSendCounter >= (util.getConstant('QCFrequency' || 5))
+    if (modSendCounter >= (util.getConstant('QCFrequency' || 2))
        && totalNotifies >= (util.getConstant('QCInitRecThreshold') || 10)) {
       modSendCounter = 0;
 
-      if (sessionId) {
+      if (sessionId) {  
         delService.queryQC(sessionId)
         .then(handleQCReport, util.stdErrCallback);
       }
     }
   }
 
+  function notifySendAll() {
+    console.log("qcService");
+    // delService.queryQCAll();
+    console.log(delService.queryQCAll());
+    //.then(handleQCReport, util.stdErrCallback);
+  }
+
   function handleQCReport(response) {
+    
     var report = response.data || {};
+    console.log(report);
     
     //var result = updateModuleRequestIds(report); // do we have any new reports?
 
     if (report.status === 'processing') {
       // right now only uses MarosijoModule
-      avgAcc = report.modules['MarosijoModule'].totalStats.avgAcc;
-      lowerUtt = report.modules['MarosijoModule'].totalStats.lowerUtt;
-      upperUtt = report.modules['MarosijoModule'].totalStats.upperUtt;
+      console.log(report.modules);
+      //lowerUtt = report.modules['MarosijoModule'].totalStats.lowerUtt;
+      //upperUtt = report.modules['MarosijoModule'].totalStats.upperUtt;
 
-      qcHandler.dataReady({'avgAcc': avgAcc, 'lowerUtt': lowerUtt, 'upperUtt': upperUtt});
+     // qcHandler.dataReady({'avgAcc': avgAcc, 'lowerUtt': lowerUtt, 'upperUtt': upperUtt});
     }
   }
 

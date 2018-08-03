@@ -31,10 +31,11 @@ MoreController.$inject = ['$location',
                           'deliveryService', 
                           'localDbService', 
                           'logger', 
+                          'qcService',
                           'tokenService', 
                           'utilityService'];
 
-function MoreController($location, $rootScope, $scope, dataService, authenticationService, deliveryService, localDbService, logger, tokenService, utilityService) {
+function MoreController($location, $rootScope, $scope, dataService, authenticationService, deliveryService, localDbService, logger, qcService, tokenService, utilityService) {
   var moreCtrl = this;
   var authService = authenticationService;
   var dbService = localDbService;
@@ -49,6 +50,7 @@ function MoreController($location, $rootScope, $scope, dataService, authenticati
   moreCtrl.setInstructor = setInstructor;
   moreCtrl.sync = sync;
   moreCtrl.logs = logs;
+  moreCtrl.review = review;
 
   moreCtrl.logout = logout;
 
@@ -82,7 +84,6 @@ function MoreController($location, $rootScope, $scope, dataService, authenticati
   function registerDevice() {
     $location.path('/register-device');
   }
-
   // DEV FUNCTIONS
 
   // dev function, clear the entire local forage database
@@ -109,6 +110,11 @@ function MoreController($location, $rootScope, $scope, dataService, authenticati
     );
   }
   
+  function review(){
+    console.log("review");
+    qcService.notifySendAll();
+  }
+
   function getTokens() {
     $scope.msg = util.getConstant('GETTINGTOKENSMSG');
 

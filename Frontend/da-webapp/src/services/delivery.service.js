@@ -49,6 +49,7 @@ function deliveryService($http, $q, $rootScope, BACKENDURL, dataService, logger,
   // API
   reqHandler.getTokens = getTokens;
   reqHandler.queryQC = queryQC;
+  reqHandler.queryQCAll = queryQCAll;
   reqHandler.submitDevice = submitDevice;
   reqHandler.submitInstructor = submitInstructor;
   reqHandler.submitRecordings = submitRecordings;
@@ -156,7 +157,16 @@ function deliveryService($http, $q, $rootScope, BACKENDURL, dataService, logger,
     // function input is a sessionId
     // a async http get call is sent to backend w a string as input
     // the return value is a 
+    console.log('queryQC')
     return $http.get(BACKENDURL + '/qc/report/session/'+sessionId);
+  }
+
+  function queryQCAll() {
+    console.log("delService");
+    // function input is a sessionId
+    // a async http get call is sent to backend w a string as input
+    // the return value is a 
+    return $http.get(BACKENDURL + '/qc/report/session/all');
   }
 
   function submitDevice(device) {

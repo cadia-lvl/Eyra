@@ -58,8 +58,8 @@ function utilityService(logger) {
     'tokenGetCount' : 10,
     'tokenGetMoreCount' : 100,  
     'QCAccThreshold' : 0.2, // if accuracy falls below this, meter will display red
-    'QCFrequency' : 5, // per sessions sent
-    'QCInitRecThreshold' : 5, // recording count before QC can report, adjustment period for speaker
+    'QCFrequency' : 2, // per sessions sent
+    'QCInitRecThreshold' : 2, // recording count before QC can report, adjustment period for speaker
     'QCHighThreshold' : 0.7, // if accuracy falls below this, meter will display yellow instead of green
     'tokenAnnouncementFreq' : 500,
     'sessionTime' : 1800, //time for each session in seconds
@@ -67,7 +67,7 @@ function utilityService(logger) {
     'syncRecCountPerSend' : 5, // recs to send each transmission to server during a Sync operation,
     'evalBufferSize' : 5, // number of prompts and/or recs to fetch and keep in memory during evaluation
     'evalSubmitFreq' : 5, // per utterance graded, after X send to server
-    'RECAGREEMENT' : true, // include the recording participant agreement
+    'RECAGREEMENT' : false, // include the recording participant agreement
     //language specific constants
     //evaluation login
     'ENTERINFO' : 'Fylltu inn þínar upplýsingar', //'Enter your info',
