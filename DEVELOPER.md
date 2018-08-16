@@ -14,8 +14,8 @@ A recommended read as well is the article published on this software, which can 
   - [Short description of folder structure](#short-description-of-folder-structure)
   - [Detailed description of the components](#detailed-description-of-the-components)
   - [Description of individual Frontend services](#description-of-individual-frontend-services)
-  - [Some useful info](#some-useful-info)
   - [Maintaining code](#maintaining-code)
+  - [Internationalization](#internationalization)
 - [Quality Control (QC)](#quality-control-qc)
   - [Firing up the QC](#firing-up-the-qc)
   - [Selecting modules to use](#selecting-modules-to-use)
@@ -27,6 +27,7 @@ A recommended read as well is the article published on this software, which can 
 - [Evaluation](#evaluation)
   - [Usage](#usage)
   - [Creating sets for evaluation](#creating-sets-for-evaluation)
+- [Some useful info/FAQ](#some-useful-infofaq)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -154,7 +155,8 @@ This list is not exhaustive.
 
 * **Setup**  
     Written to simplify the setup of Eyra. Most of the setup can be done by running [`setup.sh`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh), either with the `--all` option or other specific ones (e.g. [`./setup.sh --all --no-ap --no-mysqldb`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) to run everything except the wifi access point and the database setup, or [`./setup.sh --mysqldb`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) to only run the database setup). [`./setup.sh --all`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) runs all components not put specifically as an external component (e.g. `ext-kaldi`).  
-    * If doing [`managed=false` to `managed=true`](https://github.com/cadia-lvl/Eyra/tree/master/DEVELOPER.md#some-useful-info) doesn't work then also do the following:
+    * [`src/ap`](https://github.com/Eyra-is/Eyra/tree/master/Setup/src/ap)
+      If doing [`managed=false`] to [`managed=true`](https://github.com/cadia-lvl/Eyra/tree/master/DEVELOPER.md#some-useful-info) doesn't work then also do the following:
       
       `sudo rm /etc/hostapd/hostapd.conf`
       
@@ -263,52 +265,7 @@ along with other misc stuff.
   Service with utility functions for the app, commonly abbreviated `util`. It containes language specific constants, used to make it easy to translate the app/site to other languages. Most strings have been moved here and it is a good place to start when translating to another language.
   Also contains many configurable aspects, token count grabbed from server, frequency of QC querying etc., see also [`app.js`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/app.js).
 * [`volumeMeter.service.js`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/services/volumeMeter.service.js)  
-  Service for the volume meter, uses [volume-meter.js](https://github.com/Eyra-is/Eyra/blob/master/Frontend/da-webapp/src/volume_meter/volume-meter.js). Code in part from https://github.com/cwilso/volume-meter
-
-### Some useful info
-
-* A very useful command to restart the Flask application (python backend) is `sudo service apache2 restart`.
-
-* Prompts and tokens are used interchangeably. Originally we called them tokens, but later decided to start calling them prompts.
-
-* Look at [`ClientServerAPI.md`](https://github.com/Eyra-is/Eyra/tree/master/ClientServerAPI.md) in the project root for the REST api which is used to transmit data between client and server. This document needs to be maintained if there are made modifications to the methods therein.
-
-* Logs are located in `Local/Log`. A typical use case would be to for example have a terminal open with a `tail -f {error.log,celery.log}` to watch the apache error log and the celery (QC) log respectively.
-
-* Running [`./Setup/setup.sh --all`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) can be dangerous, because it runs the `--mysqldb` command which deletes the entire database (not the recordings though). For this reason, you now have to manually confirm you want to delete the database if you run this. Still care should be taken when using `--all`, and for example, could run [`./Setup/setup.sh --all --no-mysqldb`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) to leave the database untouched. And of course, remember to backup your database to avoid disasters like this (see [`Backend/scripts/backup_db_and_recs.sh`](https://github.com/Eyra-is/Eyra/tree/master/Backend/scripts/backup_db_and_recs.sh)). 
-
-* Running [`./Setup/setup.sh --all`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) or [`./Setup/setup.sh --ap`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) sets up a wireless access point on your computer. If this is not what you want (your wifi is disabled when this is done for example), a way to enable the wifi is the following:  
-    * `sudo nano /etc/NetworkManager/NetworkManager.conf` -> change `managed=false` to `managed=true`
-    * `sudo service network-manager restart` 
- 
-    Wifi should now work again.
-
-* Run webapp straight from `Frontend/da-webapp/src`:  
-    For development, it can be nice, not having to do a `grunt deploy` (with minification etc. and the time it takes). In which case, you can work straight from source, however some files need to be modified. These are: 
-
-    * [`Frontend/da-webapp/src/index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/index.html)  
-      **What to do**  
-      A sample `index.html` file for this is at [`Frontend/da-webapp/extra_dev_files/development_index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/extra_dev_files/development_index.html). Compare and modify your current [`src/index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/index.html) file to this (or do a merge). A sample copy of the `index.html` file for use in deployment is at [`Frontend/da-webapp/extra_dev_files/release_index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/extra_dev_files/release_index.html).
-
-    * [`Setup/src/frontend-app/default.conf`](https://github.com/Eyra-is/Eyra/tree/master/Setup/src/frontend-app/default.conf)  
-      **What to do**  
-      Change the line `YYY_SITEROOT=Frontend/da-webapp/app` to `YYY_SITEROOT=Frontend/da-webapp/src` and run a [`./Setup/setup.sh --frontend-app`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) and a `sudo service apache2 restart`.
-
-      **What does it do**  
-      It changes which folder apache uses to serve the application. From the `app/` directory to [`src/`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src).
-
-    After making these modifications, you should be able to run application straight from [`src/`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src). You will also probably want to run `grunt watch:sass` if you make any changes to the [`src/sass/app.scss`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/sass/app.scss) file.
-    
-* Monitoring apache (access the server-status page) can be done by navigating to `/diagnostics-status` (`yoursite.com/diagnostics-status`). You are prompted for a password on your first [`Setup/setup.sh --apache`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) run. The username is **admin**. Number of useful things there, like requests per second, idle workers etc.
-
-* If you run into trouble getting data from phones to server (this happened with some older phones, and when server couldn't handle load), you could try making a Firebase account and submitting all the data to there aswell, you can see how we did it, you need to uncomment the `async` and `firebase` script libraries in [`index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/index.html) and the code at the top of [`services/delivery.service.js`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/services/delivery.service.js)->`submitRecordings`.
-
-* You can see an example of converting data from another database/format to Eyra format in [`Backend/scripts/convert_to_eyra_database/malromur`](https://github.com/Eyra-is/Eyra/tree/master/Backend/scripts/convert_to_eyra_database/malromur).   
-
-* In order to collect data from people born before 2015, you need to change [`Frontend/da-webapp/src/json/speaker-info-format.json`](https://github.com/cadia-lvl/Eyra/tree/master/Frontend/da-webapp/src/json/speaker-info-format.json). Then `grunt deploy` from within the Frontend/da-webapp folder. 
-
-* The max prompt length before the scrollbar comes into play is approximately 84 characters.  
-
+  Service for the volume meter, uses [volume-meter.js](https://github.com/Eyra-is/Eyra/blob/master/Frontend/da-webapp/src/volume_meter/volume-meter.js). Code in part from https://github.com/cwilso/volume-meter 
 
 ### Maintaining code
 
@@ -494,3 +451,47 @@ VALUES
   ('example_set', 5),
   ('example_set',196);
 ```
+
+## Some useful info/FAQ
+
+* A very useful command to restart the Flask application (python backend) is `sudo service apache2 restart`.
+
+* Prompts and tokens are used interchangeably. Originally we called them tokens, but later decided to start calling them prompts.
+
+* Look at [`ClientServerAPI.md`](https://github.com/Eyra-is/Eyra/tree/master/ClientServerAPI.md) in the project root for the REST api which is used to transmit data between client and server. This document needs to be maintained if there are made modifications to the methods therein.
+
+* Logs are located in `Local/Log`. A typical use case would be to for example have a terminal open with a `tail -f {error.log,celery.log}` to watch the apache error log and the celery (QC) log respectively.
+
+* Running [`./Setup/setup.sh --all`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) can be dangerous, because it runs the `--mysqldb` command which deletes the entire database (not the recordings though). For this reason, you now have to manually confirm you want to delete the database if you run this. Still care should be taken when using `--all`, and for example, could run [`./Setup/setup.sh --all --no-mysqldb`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) to leave the database untouched. And of course, remember to backup your database to avoid disasters like this (see [`Backend/scripts/backup_db_and_recs.sh`](https://github.com/Eyra-is/Eyra/tree/master/Backend/scripts/backup_db_and_recs.sh)). 
+
+* Running [`./Setup/setup.sh --all`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) or [`./Setup/setup.sh --ap`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) sets up a wireless access point on your computer. If this is not what you want (your wifi is disabled when this is done for example), a way to enable the wifi is the following:  
+    * `sudo nano /etc/NetworkManager/NetworkManager.conf` -> change `managed=false` to `managed=true`
+    * `sudo service network-manager restart` 
+ 
+    Wifi should now work again.
+
+* Run webapp straight from `Frontend/da-webapp/src`:  
+    For development, it can be nice, not having to do a `grunt deploy` (with minification etc. and the time it takes). In which case, you can work straight from source, however some files need to be modified. These are: 
+
+    * [`Frontend/da-webapp/src/index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/index.html)  
+      **What to do**  
+      A sample `index.html` file for this is at [`Frontend/da-webapp/extra_dev_files/development_index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/extra_dev_files/development_index.html). Compare and modify your current [`src/index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/index.html) file to this (or do a merge). A sample copy of the `index.html` file for use in deployment is at [`Frontend/da-webapp/extra_dev_files/release_index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/extra_dev_files/release_index.html).
+
+    * [`Setup/src/frontend-app/default.conf`](https://github.com/Eyra-is/Eyra/tree/master/Setup/src/frontend-app/default.conf)  
+      **What to do**  
+      Change the line `YYY_SITEROOT=Frontend/da-webapp/app` to `YYY_SITEROOT=Frontend/da-webapp/src` and run a [`./Setup/setup.sh --frontend-app`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) and a `sudo service apache2 restart`.
+
+      **What does it do**  
+      It changes which folder apache uses to serve the application. From the `app/` directory to [`src/`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src).
+
+    After making these modifications, you should be able to run application straight from [`src/`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src). You will also probably want to run `grunt watch:sass` if you make any changes to the [`src/sass/app.scss`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/sass/app.scss) file.
+    
+* Monitoring apache (access the server-status page) can be done by navigating to `/diagnostics-status` (`yoursite.com/diagnostics-status`). You are prompted for a password on your first [`Setup/setup.sh --apache`](https://github.com/Eyra-is/Eyra/tree/master/Setup/setup.sh) run. The username is **admin**. Number of useful things there, like requests per second, idle workers etc.
+
+* If you run into trouble getting data from phones to server (this happened with some older phones, and when server couldn't handle load), you could try making a Firebase account and submitting all the data to there aswell, you can see how we did it, you need to uncomment the `async` and `firebase` script libraries in [`index.html`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/index.html) and the code at the top of [`services/delivery.service.js`](https://github.com/Eyra-is/Eyra/tree/master/Frontend/da-webapp/src/services/delivery.service.js)->`submitRecordings`.
+
+* You can see an example of converting data from another database/format to Eyra format in [`Backend/scripts/convert_to_eyra_database/malromur`](https://github.com/Eyra-is/Eyra/tree/master/Backend/scripts/convert_to_eyra_database/malromur).   
+
+* In order to collect data from people born before 2015, you need to change [`Frontend/da-webapp/src/json/speaker-info-format.json`](https://github.com/cadia-lvl/Eyra/tree/master/Frontend/da-webapp/src/json/speaker-info-format.json). Then `grunt deploy` from within the Frontend/da-webapp folder. 
+
+* The max prompt length before the scrollbar comes into play is approximately 84 characters. 
