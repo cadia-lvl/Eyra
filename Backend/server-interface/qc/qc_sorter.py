@@ -33,31 +33,6 @@ class QcSorter(object):
 
     Class for handling quality control sorting to the right recording in db.
 
-    Its only public method is :meth:`getReport`. See its docstring for
-    details.
-
-    Use the config.py file to adjust which modules you want to be active
-    in the QC.
-
-    Usage:
-
-    >>> qc = QcHandler(app)
-    >>> qc.getReport(1)
-    {'sessionId': 1, 'status': 'started', 'modules':{}}
-    ... wait ...
-    >>> qc.getReport(1)
-    {"sessionId": 1,
-     "status": "processing",
-     "modules"  {
-        "marosijo" :  {
-                        "totalStats": {"accuracy": [0.0;1.0]"},
-                        "perRecordingStats": [{"recordingId": ...,
-                            "stats": {"accuracy": [0.0;1.0]}}]}
-                      }, 
-                      ...
-                }
-    }
-
     """
 
     def __init__(self, app, dbHandler):
@@ -65,19 +40,23 @@ class QcSorter(object):
 
         
     def sortReports(self,reports):
-  
+        #Locate the data and send it to be processed by the db handler
         if reports:
-            data = json.loads(reports[0])
-            #print('xxxxxxxxxxxxxxxxxxxxxx')
-            perRecording = data['perRecordingStats']
+            try:
+                data = reports['MarosijoModule']
+            except:    
+                data = json.loads(reports[0])
+            try:
+                perRecording = data['perRecordingStats']
+                for i in perRecording:
+                    acc = i['stats']['accuracy']
+                    grade = int(floor(acc*100))
+                    recId = i['recordingId']
+                    if (grade and recId):
+                        status = self.dbHandler.processQcData(recId, grade)
+                        print(status)
+            except:
+                print("Invalid report")
 
-            for i in perRecording:
-                acc = i['stats']['accuracy'] 
-                grade = int(floor(acc*100))
-                recId = i['recordingId']
-                if grade & recId:
-                    status = self.dbHandler.processQcData(recId, grade)
-                    print(status)
 
-    
   

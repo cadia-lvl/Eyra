@@ -20,6 +20,7 @@ import datetime
 import time
 import json
 import os
+import sh
 
 #: Relative imports
 from celery import Celery
@@ -94,6 +95,9 @@ def handleSessionOver(name, sessionId) -> None:
     reportPath = 'report/{}/{}'.format(name, sessionId)
     try:
         report = _redis.get(reportPath).decode('utf-8')
+        #sorts the recording in the session by calling the backend again
+        sh.curl('-k', 'https://localhost/backend/qc/report/session/sort/{}'.format(sessionId))
+        #.format(sessionId))
         # We also dump the report onto disk
         dumpPath = '{}/{}'.format(celery_config.const['qc_report_dump_path'],
                                   reportPath)
@@ -201,7 +205,7 @@ def qcProcSessionMarosijoModule(name, sessionId, slistIdx=0, batchSize=5) -> Non
     with the updated slistIdx (and by that placing itself at the back
     of the celery queue), look at instagram, that's how they do it xD
     """
-
+    
     if not celery_config.const['qc_big_batch_mode'] and isSessionOver(sessionId):
         handleSessionOver(name, sessionId)
         return

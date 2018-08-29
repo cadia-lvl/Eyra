@@ -78,34 +78,36 @@ class QcRunner(object):
         start = time.time()
         totalDiff = 0
         for i in sesRange:
-            # if in individual_sessions mode, strip newline
-            if type(i) is str:
-                i = i.strip()
-            if to_session == 'stdin':
-                prevSes.append(i)
+            if not self.dbHandler.isSessionGraded(i):
+                # if in individual_sessions mode, strip newline
+                if type(i) is str:
+                    i = i.strip()
+                if to_session == 'stdin':
+                    prevSes.append(i)
 
-            print('Processing session {}'.format(i))
-            recsOnDisk = self.qcDumpRecCountBySession(i)
-            recsInRedis = self.qcRedisRecCountBySession(i)
-            recsInDb = dbWork.recCountBySession(i)
-            recsDone = max(recsInRedis, recsOnDisk)
-            if verbose:
-                print('Recs done: {}'.format(recsDone))
-                print('..in redis: {}'.format(recsInRedis))
-                print('..on disk: {}'.format(recsOnDisk))
-                print('..recs in db: {}'.format(recsInDb))
-            if (recsDone < recsInDb):
-                print('Querying QC for session {}'.format(i))
-                qcReport = self.qcHandler.getReport(i)
-                #sh.curl('-k', 'https://localhost/backend/qc/report/session/{}'.format(i))
-                time.sleep(sleep_between)
-                diff = dbWork.recCountBySession(i)-recsDone
-                totalDiff+=diff
-                print('Diff:',diff)
+                print('Processing session {}'.format(i))
+                recsOnDisk = self.qcDumpRecCountBySession(i)
+                recsInRedis = self.qcRedisRecCountBySession(i)
+                recsInDb = dbWork.recCountBySession(i)
+                recsDone = max(recsInRedis, recsOnDisk)
+                if verbose:
+                    print('Recs done: {}'.format(recsDone))
+                    print('..in redis: {}'.format(recsInRedis))
+                    print('..on disk: {}'.format(recsOnDisk))
+                    print('..recs in db: {}'.format(recsInDb))
+                if (recsDone < recsInDb):
+                    print('Querying QC for session {}'.format(i))
+                    qcReport = self.qcHandler.getReportSorting(i)
+                    time.sleep(sleep_between)
+                    diff = dbWork.recCountBySession(i)-recsDone
+                    totalDiff+=diff
+                    print('Diff:',diff)
+                else:
+                    qcReport = self.qcHandler.getReportSorting(i)
             else:
-                qcReport = self.qcHandler.getReport(i)
+                print('Session {} already graded'.format(i))
 
-        print('totalDiff:',totalDiff)
+            print('totalDiff:',totalDiff)
    
 
     def qcRedisRecCountBySession(self, sessionId):

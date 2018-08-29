@@ -753,6 +753,7 @@ class _SimpleMarosijoTask(Task):
             False or raise an exception if something is wrong (and
             this should not be called again.)
         """
+
         if not indices:
             # Nothing left to process.
             return True
@@ -928,7 +929,7 @@ class _SimpleMarosijoTask(Task):
 
                 try:
                     hyp =  ' '.join([self.common.symbolTableToInt[x] 
-                                        for x in hyps[str(r['recId'])].split(' ')]) # hypothesis (words not ints)
+                    for x in hyps[str(r['recId'])].split(' ')]) # hypothesis (words not ints)
                 except KeyError as e:
                     if hyps[str(r['recId'])] == '':
                         hyp = ''

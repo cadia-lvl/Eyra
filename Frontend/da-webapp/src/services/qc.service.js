@@ -84,10 +84,7 @@ function qcService($q, dataService, deliveryService, logger, utilityService) {
   }
 
   function notifySendAll() {
-    console.log("qcService");
-    // delService.queryQCAll();
-    console.log(delService.queryQCAll());
-    //.then(handleQCReport, util.stdErrCallback);
+    delService.queryQCAll();
   }
 
   function handleQCReport(response) {
@@ -95,15 +92,14 @@ function qcService($q, dataService, deliveryService, logger, utilityService) {
     var report = response.data || {};
     console.log(report);
     
-    //var result = updateModuleRequestIds(report); // do we have any new reports?
+    var result = updateModuleRequestIds(report); // do we have any new reports?
 
     if (report.status === 'processing') {
       // right now only uses MarosijoModule
-      console.log(report.modules);
-      //lowerUtt = report.modules['MarosijoModule'].totalStats.lowerUtt;
-      //upperUtt = report.modules['MarosijoModule'].totalStats.upperUtt;
+      lowerUtt = report.modules['MarosijoModule'].totalStats.lowerUtt;
+      upperUtt = report.modules['MarosijoModule'].totalStats.upperUtt;
 
-     // qcHandler.dataReady({'avgAcc': avgAcc, 'lowerUtt': lowerUtt, 'upperUtt': upperUtt});
+     qcHandler.dataReady({'avgAcc': avgAcc, 'lowerUtt': lowerUtt, 'upperUtt': upperUtt});
     }
   }
 

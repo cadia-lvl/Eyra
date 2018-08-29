@@ -564,9 +564,30 @@ class DbHandler:
             log('There was an error: {}, not committing to MySQL database.'.format(error))
             return dict(msg=error, statusCode=errorStatusCode)
 
+    def isSessionGraded(self, sessionId):
+        try:
+            # insert into recording
+            cur = self.mysql.connection.cursor()
+
+            # firstly, check if this session already exists, if so, update end time, otherwise add session
+            cur.execute('SELECT qcGrade FROM recording WHERE \
+                        sessionId=%s',
+                        (sessionId,))
+            grade = cur.fetchall()
+            if grade is None:
+                return False
+
+            for row in grade:
+                if int(row[0]) != -1:
+                    return True
+
+            return False
+        except:
+            print("Problem in database")
+
+        return False
+
     def processQcData(self, recordingId, grade):
-        print(recordingId)
-        
         # can be a number of messages, depending on the error.
         # sent back to the user, and used as a flag to see
         

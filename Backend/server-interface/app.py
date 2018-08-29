@@ -176,7 +176,6 @@ def qc_report(sessionId):
         }
     """
     if request.method == 'GET':
-        print(sessionId)
         qcReport = qcHandler.getReport(sessionId)
         if qcReport:
             return json.dumps(qcReport), 200
@@ -188,8 +187,11 @@ def qc_report(sessionId):
 
 @app.route('/qc/report/session/all', methods=['GET'])
 def grading():
+    """
+    Runs a QC grading on every session. If a session has been graded it is skipped.
+    """
     if request.method == 'GET':
-        qcRun = qcRunner.runQC(73, 75, 420, 99999)
+        qcRun = qcRunner.runQC(2, None, 420, 99999)
         if qcRun:
             return 'Success', 200
         else:
@@ -197,6 +199,20 @@ def grading():
 
     return 'Unexpected error.', 500
 
+
+@app.route('/qc/report/session/sort/<int:sessionId>', methods=['GET'])
+def sort(sessionId):
+    """
+    Function to put grades of compleated reports in database.
+    """
+    if request.method == 'GET':
+        qcReport = qcHandler.getReportSorting(sessionId)
+        if qcReport == 'Sent':
+            return 'Success', 200
+        else:
+            return qcReport, 404
+
+    return 'Unexpected error.', 500
 
 # EVALUATION ROUTES
 
