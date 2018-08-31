@@ -239,9 +239,9 @@ class QcHandler(object):
 
 
     def getReportSorting(self, session_id) -> dict:
-    """
+        """
         Checks for available reports witch are processed and sent to the database
-    """
+        """
         # check if session exists
         if not self.dbHandler.sessionExists(session_id):
             return None
