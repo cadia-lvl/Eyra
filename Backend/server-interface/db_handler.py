@@ -604,7 +604,7 @@ class DbHandler:
         elif 60 <= grade < 90:
             evalSet = medium
 
-        elif 0 <= grade <= 60:
+        elif 0 <= grade < 60:
             evalSet = low
         
         else:
