@@ -126,6 +126,9 @@ This list is not exhaustive.
         Here you can place any language specific data like a lexicon for example.
         * [`is/`](https://github.com/Eyra-is/Eyra/tree/master/Backend/lang_data)  
             Example data in Icelandic.
+    * ***Setting up a SSL certificate***
+        Set up an SSL certificate for https by going to https://certbot.eff.org. There it will ask you for the Software=Apache and System=(Ubuntu or Debian) and give you instructions to follow.
+       Once the software is installed. run `sudo certbot run` which will give you an interactive interface to follow. Then every three months run `sudo certbot renew`. This can also be setup as a root cronjob every three months like `0 4 * */3 * certbot renew` which will renew every Jan, Apr, July, and Oct.
 
 * **Frontend**  
     An AngularJS application and the main component (what the user sees ;)) of Eyra. Setup used the [angular-seed](https://github.com/angular/angular-seed) code to start with. Some original design philosophies: 
