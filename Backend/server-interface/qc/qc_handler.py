@@ -210,16 +210,20 @@ class QcHandler(object):
                                                         session_id)
                 try:
                     with open(qcReportPath, 'r') as f:
-                        reports = f.read().splitlines() # might be more than one, if a timeout occurred and recording was resumed
+                        reports_lines = f.read().splitlines() # might be more than one, if a timeout occurred and recording was resumed
                         # sum the recordings of all the reports (usually only one)
                         totalRecs = 0
-                        for report in reports:
-                            if report == '':
+                        for line in reports_lines:
+                            if line == '':
                                 # robustness to extra newlines
                                 continue
-                            report = json.loads(report)
+                            partial_report = json.loads(line)
                             try:
-                                totalRecs += len(report['perRecordingStats'])
+                                reports[name].update(partial_report)
+                            except:
+                                reports[name] = partial_report
+                            try:
+                                totalRecs += len(reports[name]['perRecordingStats'])
                             except KeyError as e:
                                 # probably a module which doesn't have perRecordingStats, allow it.
                                 break
@@ -290,16 +294,20 @@ class QcHandler(object):
                                                         session_id)
                 try:
                     with open(qcReportPath, 'r') as f:
-                        reports = f.read().splitlines() # might be more than one, if a timeout occurred and recording was resumed
+                        reports_lines = f.read().splitlines() # might be more than one, if a timeout occurred and recording was resumed
                         # sum the recordings of all the reports (usually only one)
                         totalRecs = 0
-                        for report in reports:
-                            if report == '':
+                        for line in reports_lines:
+                            if line == '':
                                 # robustness to extra newlines
                                 continue
-                            report = json.loads(report)
+                            partial_report = json.loads(line)
                             try:
-                                totalRecs += len(report['perRecordingStats'])
+                                reports[name].update(partial_report)
+                            except:
+                                reports[name] = partial_report
+                            try:
+                                totalRecs += len(reports[name]['perRecordingStats'])
                             except KeyError as e:
                                 # probably a module which doesn't have perRecordingStats, allow it.
                                 break
